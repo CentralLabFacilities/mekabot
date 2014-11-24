@@ -6,8 +6,8 @@
 	path = m3meka
 	url = https://github.com/semeyerz/m3meka.git
 
-[submodule "m3ens"]
-	path = m3ens
+[submodule "m3bie"]
+	path = m3bie
 	url = https://github.com/semeyerz/m3bie.git
 
 [submodule "meka-ros-pkg"]
