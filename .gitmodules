@@ -1,23 +1,23 @@
 [submodule "m3core"]
 	path = m3core
-	url = https://github.com/ahoarau/m3core.git
+	url = https://github.com/semeyerz/m3core.git
 
 [submodule "m3meka"]
 	path = m3meka
-	url = https://github.com/ahoarau/m3meka.git
+	url = https://github.com/semeyerz/m3meka.git
 
 [submodule "m3ens"]
 	path = m3ens
-	url = https://github.com/ahoarau/m3ens.git
+	url = https://github.com/semeyerz/m3bie.git
 
 [submodule "meka-ros-pkg"]
 	path = meka-ros-pkg
-	url = https://github.com/ahoarau/meka-ros-pkg.git
+	url = https://github.com/semeyerz/meka-ros-pkg.git
 
 [submodule "meka-cmake-modules"]
 	path = meka-cmake-modules
-	url = https://github.com/ahoarau/meka-cmake-modules.git
+	url = https://github.com/semeyerz/meka-cmake-modules.git
 
 [submodule "holomni_pcv"]
 	path = holomni_pcv
-	url = https://github.com/ahoarau/holomni_pcv.git
+	url = https://github.com/semeyerz/holomni_pcv.git
