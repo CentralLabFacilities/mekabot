@@ -38,7 +38,7 @@ sudo apt-get install libqt4-dev moc g++ libncurses5-dev kernel-package gcc-multi
 
 ### The RTAI-patched kernel
 
-See: https://github.com/ahoarau/m3installation/blob/master/rtai-kernel-build.md
+See: https://github.com/semeyerz/m3installation/blob/master/rtai-kernel-build.md
 
 #### Installation
 
