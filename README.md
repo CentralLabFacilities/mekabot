@@ -39,6 +39,8 @@ sudo apt-get install libqt4-dev moc g++ libncurses5-dev kernel-package gcc-multi
 ### The RTAI-patched kernel
 
 See: https://github.com/semeyerz/m3installation/blob/master/rtai-kernel-build.md
+> You can also [compile your own kernel](https://github.com/ahoarau/m3installation/blob/master/rtai-kernel-build.md)
+> have a look at this as well: https://github.com/ahoarau/mekabot/wiki/Meka-mob-%28RTPC%29-configuration
 
 #### Installation
 
@@ -47,7 +49,7 @@ sudo dpkg -i --force-all $headers $image
 ```
 
 Now **boot** on the new kernel using **grub** at **startup**. Please note the name of the kernel.
-> Note : you might have to either hold sift on startup or update the grub config to boot on the rtai patched kernel: 
+> Note : you might have to either hold shift on startup or update the grub config to boot on the rtai patched kernel: 
 ```bash
 sudo nano /etc/defaults/grub
 ```
@@ -58,7 +60,7 @@ sudo nano /etc/default/grub
 # Then edit the following line: 
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 # To :
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash lapic=notscdeadline hpet=disable i915.i915_enable_rc6=0 i915.powersave=0 intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash lapic=notscdeadline noapic acpi=off clocksource=tsc hpet=disable i915.i915_enable_rc6=0 i915.powersave=0 intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll"
 
 ## Explanation
 # lapic=notscdeadline : usefull for i5 and i7 processors, reduces latency by a factor of 10 on the meka-mob
@@ -142,6 +144,10 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install ros-$ROS_DISTRO-desktop-full ros-$ROS_DISTRO-moveit-* ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers python-rosinstall python-pip
 ```
+
+You can check the ros_control implementation in the [wiki](https://github.com/ahoarau/mekabot/wiki).
+
+
 ```bash
 sudo -E rosdep init
 rosdep update
@@ -160,19 +166,6 @@ cd ~/catkin_ws/src
 catkin_init_workspace
 cd ~/catkin_ws/
 catkin_make
-```
-
-### (Recommended) Install some IDEs
-
-#### Python (for most users): Eclipse + PyDev or spyder
-```bash
-sudo apt-get install eclipse spyder
-```
-
-#### ROS and C++ Real-time (Advanced users): Qt creator and/or Kdevelop
-```bash
-sudo apt-get install qtcreator 
-sudo apt-get install kdevelop
 ```
 
 ##Install Mekabot M3
@@ -224,7 +217,7 @@ echo '
 ## Meka
 
 ## The M3 Software environnement setup
-source /usr/local/share/m3/setup.bash
+source /usr/local/share/setup.bash
 
 ## Meka config files location
 export M3_ROBOT=~/mekabot/m3bie/real_meka
@@ -305,6 +298,19 @@ exit
 sudo chmod 755 /etc/cron.daily/ntpdate
 ```
 
+
+### (Recommended) Install some IDEs
+
+#### Python (for most users): Eclipse + PyDev or spyder
+```bash
+sudo apt-get install eclipse spyder
+```
+
+#### ROS and C++ Real-time (Advanced users): Qt creator and/or Kdevelop
+```bash
+sudo apt-get install qtcreator 
+sudo apt-get install kdevelop
+```
 
 
 ### (OPTIONAL) Setup robot's Pcs :
