@@ -1,8 +1,11 @@
 Mekabot M3 Installation instructions
 ==============
-![Meka robot at Ensta Paristech](http://googledrive.com/host/0B6zWJ1Gzg1UTVkgtMWJaX1NCdVE/meka2.jpg)
 
-This wiki describes the full installation of m3 software to control/simulate the Meka robot at Ensta ParisTech.
+
+This wiki describes the full installation of m3 software to control/simulate the Meka robot at CITEC.
+
+Thanks a lot to Antoine Hoarau for making all of his work public and helping us to port it to our robot.
+
 This installation supports 3 versions, depending on your needs : 
 - Only the M3 python API for development
 - Real-time M3 (c++ and python) for development and simulation
@@ -10,17 +13,15 @@ This installation supports 3 versions, depending on your needs :
 
 | ***OS Tested*** | ***Status*** | ***Notes***
 |:------------------|:----:|:---------------:
-| Ubuntu 12.04 x86 | OK | w ROS Hydro 
-| Ubuntu 12.04 x64 | OK | w ROS Hydro
-| Ubuntu 13.10 x86 | OK | w ROS Indigo 
-| **Ubuntu 14.04 x64**| OK | w ROS Indigo/MoveIt! 
+| Ubuntu 12.04 x86 | ? | w ROS Hydro 
+| Ubuntu 12.04 x64 | ? | w ROS Hydro
+| Ubuntu 13.10 x86 | ? | w ROS Indigo 
+| **Ubuntu 14.04 x64**| ? | w ROS Indigo/MoveIt! 
 
 
-> Current version on the Meka : Ubuntu 14.04LTS on kernel 3.10.32, rtai4.0 (magma branch from the [cvs](https://gna.org/cvs/?group=rtai)), Igh EtherCAT master 1.5.2, ROS Indigo+MoveIt!
+> Current version on the Meka : Ubuntu 14.04LTS on kernel 3.14.7, rtai4.1-test1
 
-## Build Status
-[![Build Status](https://travis-ci.org/ahoarau/mekabot.svg?branch=master)](https://travis-ci.org/ahoarau/mekabot)
-## Ubuntu 12.04 - 14.04 (x86/x64) w/ ROS Hydro/Indigo
+
 
 ### Prerequisites
 #### Necessary 
@@ -36,36 +37,10 @@ sudo apt-get install libqt4-dev moc g++ libncurses5-dev kernel-package gcc-multi
 > Note : if you only want the **python** interface, jump to the "install Mekabot" section.
 
 ### The RTAI-patched kernel
-#### Preparation
-```bash
-# Determine if x86 or x64 (x86_x64)
-uname -m
-```
-#### x86_64 (64bits)
-```
-folder_id=0B6zWJ1Gzg1UTZWRnQ2lUYjVtWnM
-kernel_name=3.10.32-rtwar3_3.10.32-rtwar3-10.00.Custom_amd64
-```
 
-
-#### x86 (32bits)
-```
-folder_id=0B6zWJ1Gzg1UTaWgwX01VOHNwX28
-kernel_name=3.8.13-rtmeka4.0_3.8.13-rtmeka4.0-10.00.Custom_i386.deb
-```
-
-### Download
-```
-headers=linux-headers-$kernel_name.deb
-image=linux-image-$kernel_name.deb
-
-# Get the Rtai4.0 patched kernel headers
-wget https://googledrive.com/host/$folder_id/$headers
-
-# Get the Rtai4.0 patched kernel image
-wget https://googledrive.com/host/$folder_id/$image
-```
-> Note: more rtai kernels are available [here](http://goo.gl/xFhHV6).
+See: https://github.com/semeyerz/m3installation/blob/master/rtai-kernel-build.md
+> You can also [compile your own kernel](https://github.com/ahoarau/m3installation/blob/master/rtai-kernel-build.md)
+> have a look at this as well: https://github.com/ahoarau/mekabot/wiki/Meka-mob-%28RTPC%29-configuration
 
 #### Installation
 
@@ -74,7 +49,7 @@ sudo dpkg -i --force-all $headers $image
 ```
 
 Now **boot** on the new kernel using **grub** at **startup**. Please note the name of the kernel.
-> Note : you might have to either hold sift on startup or update the grub config to boot on the rtai patched kernel: 
+> Note : you might have to either hold shift on startup or update the grub config to boot on the rtai patched kernel: 
 ```bash
 sudo nano /etc/defaults/grub
 ```
@@ -85,7 +60,7 @@ sudo nano /etc/default/grub
 # Then edit the following line: 
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 # To :
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash lapic=notscdeadline hpet=disable i915.i915_enable_rc6=0 i915.powersave=0 intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash lapic=notscdeadline noapic acpi=off clocksource=tsc hpet=disable i915.i915_enable_rc6=0 i915.powersave=0 intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll"
 
 ## Explanation
 # lapic=notscdeadline : usefull for i5 and i7 processors, reduces latency by a factor of 10 on the meka-mob
@@ -152,10 +127,6 @@ sudo ldconfig
 ```bash
 sudo sh -c "echo 'deb http://packages.ros.org/ros/ubuntu $(lsb_release -cs) main' > /etc/apt/sources.list.d/ros-latest.list"
 ```
-#### For Ensta people : use local repo (way faster)
-```bash
-sudo sh -c "echo 'deb http://fermion.ensta.fr/ros/ubuntu $(lsb_release -cs) main' > /etc/apt/sources.list.d/ros-latest.list"
-```
 
 > If on Ubuntu < 13.10
 ```bash
@@ -173,6 +144,10 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install ros-$ROS_DISTRO-desktop-full ros-$ROS_DISTRO-moveit-* ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers python-rosinstall python-pip
 ```
+
+You can check the ros_control implementation in the [wiki](https://github.com/ahoarau/mekabot/wiki).
+
+
 ```bash
 sudo -E rosdep init
 rosdep update
@@ -191,19 +166,6 @@ cd ~/catkin_ws/src
 catkin_init_workspace
 cd ~/catkin_ws/
 catkin_make
-```
-
-### (Recommended) Install some IDEs
-
-#### Python (for most users): Eclipse + PyDev or spyder
-```bash
-sudo apt-get install eclipse spyder
-```
-
-#### ROS and C++ Real-time (Advanced users): Qt creator and/or Kdevelop
-```bash
-sudo apt-get install qtcreator 
-sudo apt-get install kdevelop
 ```
 
 ##Install Mekabot M3
@@ -255,13 +217,13 @@ echo '
 ## Meka
 
 ## The M3 Software environnement setup
-source /usr/local/share/m3/setup.bash
+source /usr/local/share/setup.bash
 
 ## Meka config files location
-export M3_ROBOT=~/mekabot/m3ens/real_meka
+export M3_ROBOT=~/mekabot/m3bie/real_meka
 
 ## Virtual Config onverlay
-export M3_ROBOT=$M3_ROBOT:~/mekabot/m3ens/virtual_meka
+export M3_ROBOT=$M3_ROBOT:~/mekabot/m3bie/virtual_meka
 
 ## Some python hacks
 export MALLOC_CHECK_=0
@@ -283,8 +245,8 @@ source ~/catkin_ws/install_isolated/setup.bash
 ##################################################################
 ## Additional Meka-stuff
 
-export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/mekabot/m3ens-demos/ros:~/mekabot/m3ens-tutos/ros:~/mekabot/m3ens-utils/ros:~/mekabot/meka-ros-pkg:~/mekabot/m3core/ros:~/mekabot/m3meka/ros
-export PYTHONPATH=$PYTHONPATH:~/mekabot/m3ens-demos/scripts:~/mekabot/m3ens-utils/scripts:~/mekabot/m3ens-utils/python:~/mekabot/m3ens-utils/ros
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/mekabot/m3bie-demos/ros:~/mekabot/m3bie-tutos/ros:~/mekabot/m3bie-utils/ros:~/mekabot/meka-ros-pkg:~/mekabot/m3core/ros:~/mekabot/m3meka/ros
+export PYTHONPATH=$PYTHONPATH:~/mekabot/m3bie-demos/scripts:~/mekabot/m3bie-utils/scripts:~/mekabot/m3bie-utils/python:~/mekabot/m3bie-utils/ros
 '>>~/.m3rc
 
 echo 'source ~/.m3rc' >> ~/.bashrc
@@ -302,7 +264,7 @@ catkin_make
 ```
 
 
-### Get time synchronization for ROS (Highly recommended for Ensta users)
+### Get time synchronization for ROS (Highly recommended)
 ```bash
 sudo apt-get install ntp
 sudo nano /etc/ntp.conf
@@ -314,9 +276,12 @@ It should look like that :
 #server 1.ubuntu.pool.ntp.org
 #server 2.ubuntu.pool.ntp.org
 #server 3.ubuntu.pool.ntp.org
-server ensta.ensta.fr
+server stratum2-1.ntp.techfak.uni-bielefeld.de burst iburst
+server stratum2-2.ntp.techfak.uni-bielefeld.de burst iburst
+server stratum2-3.ntp.techfak.uni-bielefeld.de burst iburst
+server stratum2-4.ntp.techfak.uni-bielefeld.de burst iburst
 
-# Use Ubuntu's ntp server as a fallback (or not at ensta ;) )
+# Use Ubuntu's ntp server as a fallback
 server ntp.ubuntu.com
 ```
 ```bash
@@ -334,13 +299,29 @@ sudo chmod 755 /etc/cron.daily/ntpdate
 ```
 
 
+### (Recommended) Install some IDEs
+
+#### Python (for most users): Eclipse + PyDev or spyder
+```bash
+sudo apt-get install eclipse spyder
+```
+
+#### ROS and C++ Real-time (Advanced users): Qt creator and/or Kdevelop
+```bash
+sudo apt-get install qtcreator 
+sudo apt-get install kdevelop
+```
+
 
 ### (OPTIONAL) Setup robot's Pcs :
+
+TODO: update IPs
+
 ```bash
 sudo -s
-echo '192.168.20.117 meka-mob'>>/etc/hosts
-echo '192.168.20.118 meka-moch'>>/etc/hosts
-echo '192.168.20.119 meka-mud'>>/etc/hosts
+echo '192.168.20.X meka-man'>>/etc/hosts
+echo '192.168.20.X meka-marbel'>>/etc/hosts
+echo '192.168.20.X meka-mariposa'>>/etc/hosts
 exit
 ```
 
@@ -365,4 +346,5 @@ roslaunch meka_description m3ens_viz.launch
 Checkout the [wiki](https://github.com/ahoarau/mekabot/wiki) for more info !
 
 
->  *Maintainer* : Antoine Hoarau <hoarau.robotics@gmail.com>
+>  *Maintainer* : Sebastian Meyer zu Borgsen <semeyerz@techfak.uni-bielefeld.de>
+>  *Credits to* : Antoine Hoarau <hoarau.robotics@gmail.com>
