@@ -16,23 +16,36 @@ This installation supports 3 versions, depending on your needs :
 | Ubuntu 12.04 x86 | ? | w ROS Hydro 
 | Ubuntu 12.04 x64 | ? | w ROS Hydro
 | Ubuntu 13.10 x86 | ? | w ROS Indigo 
-| **Ubuntu 14.04 x64**| ? | w ROS Indigo/MoveIt! 
+| Ubuntu 14.04 x64| ? | w ROS Indigo/MoveIt! 
+| **KUbuntu 16.04LTS x64**| ? | w ROS Kinetic(shadow-fixed)/MoveIt! 
 
 
-> Current version on the Meka : Ubuntu 14.04LTS on kernel 3.14.7, rtai4.1-test1
+> Current version on the Meka : KUbuntu 16.04LTS on kernel 3.14.7, rtai4.1-test1
 
 
 
 ### Prerequisites
-#### Necessary 
+All Information in this section apply to:
+meka-man 
+meka-marbel 
+meka-matter 
+meka-gpu
+
+#### Basics
+- install Ubuntu 16.04
+- enable autologin
+- disable kwallet subsystem
+- set up wifi connection
+
+
+
+#### Recommended Packages
+Add ROS Shadow-Fixed Repo. See: http://wiki.ros.org/ShadowRepository
 ```bash
-sudo apt-get install cmake git libeigen3-dev libprotobuf-dev protobuf-compiler gnuplot-x11 libboost-dev python-dev python-protobuf python-matplotlib python-yaml python-gnuplot python-scipy python-sip-dev python-sip sip-dev swig python-pandas python-sympy python-nose python-numpy openssh-server openssh-client
+sudo apt-get install
 ```
-##### Nice to have to maybe compile a kernel later
-```bash
-sudo apt-get install libqt4-dev moc g++ libncurses5-dev kernel-package gcc-multilib libc6-dev libtool automake  
-```
-------
+TODO: add final package list here
+
 
 > Note : if you only want the **python** interface, jump to the "install Mekabot" section.
 
@@ -43,6 +56,8 @@ See: https://github.com/semeyerz/m3installation/blob/master/rtai-kernel-build.md
 > have a look at this as well: https://github.com/ahoarau/mekabot/wiki/Meka-mob-%28RTPC%29-configuration
 
 #### Installation
+inux-headers-3.14.17-rtai-4.1_3.14.17-rtai-4.1-10.00.Custom_amd64.deb
+linux-image-3.14.17-rtai-4.1_3.14.17-rtai-4.1-10.00.Custom_amd64.deb
 
 ```bash
 sudo dpkg -i --force-all $headers $image
@@ -62,6 +77,10 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 # To :
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash lapic=notscdeadline noapic acpi=off clocksource=tsc hpet=disable i915.i915_enable_rc6=0 i915.powersave=0 intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll"
 
+and maybe add this:
+GRUB_DEFAULT=saved
+GRUB_SAVEDEFAULT=true
+
 ## Explanation
 # lapic=notscdeadline : usefull for i5 and i7 processors, reduces latency by a factor of 10 on the meka-mob
 # hpet=disable : rtai does not like hpet, so disable it to make sure it never uses it (it should not). Not mandatory as rtai is smart enough to not use it.
@@ -80,17 +99,17 @@ sudo reboot
 ```
 
 
-### RTAI 4.0 installation 
+### RTAI 4.1.1 installation 
 #### Download
 ```bash
-sudo apt-get install automake
-git clone https://github.com/ShabbyX/RTAI.git ~/RTAI
+wget https://www.rtai.org/userfiles/downloads/RTAI/rtai-4.1.1.tar.bz2
+tar xfvj rtai-4.1.1.tar.bz2
+
 ```
 
 #### Installation
 ```bash
-cd ~/RTAI
- ./autogen.sh
+cd rtai-4.1.1/
 make menuconfig
 # Configure the Number of cpus you have, and uncheck oneshot timer
 make
@@ -172,7 +191,7 @@ catkin_make
 
 ### Download
 ```bash
-git clone https://github.com/ahoarau/mekabot.git ~/mekabot
+git clone https://github.com/CentralLabFacilities/mekabot.git ~/mekabot
 cd ~/mekabot
 git submodule init
 git submodule update
@@ -207,7 +226,7 @@ sudo make install
 ```
 > Note : 
 > * Compiling in Release makes the M3 system **twice** as fast (Essentially due to KDL). 
-> * If you are running on real hardware, install [EtherCAT](https://github.com/ahoarau/ethercat-drivers) first, then compile Mekabot with -DETHERCAT=1 and in release as above.
+> * If you are running on real hardware, install [EtherCAT](https://github.com/CentralLabFacilities/ethercat-drivers) first, then compile Mekabot with -DETHERCAT=1 and in release as above.
 
 ## Update your bashrc
 ```bash
